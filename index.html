@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ক্যাশ মেমো / এন্ট্রি ফরম - কর্ণ কম্পিউটার ট্রেনিং ইনস্টিটিউট</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'SolaimanLipi', 'Kalpurush', 'Siyam Rupali', Arial, sans-serif;
+        }
+        body {
+            background-color: #f4f6f9;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        
+        /* Header styling */
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 26px;
+            color: #1a252f;
+            margin-bottom: 4px;
+        }
+        .header p {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.4;
+        }
+        
+        /* Info Form Section */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 20px;
+            margin-bottom: 20px;
+        }
+        .info-group {
+            display: flex;
+            align-items: center;
+        }
+        .info-group label {
+            font-weight: bold;
+            width: 70px;
+            font-size: 14px;
+        }
+        .info-group input {
+            flex: 1;
+            padding: 6px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .info-group.full-width {
+            grid-column: span 2;
+        }
+        
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        table, th, td {
+            border: 1px solid #333;
+        }
+        th, td {
+            padding: 8px 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        td input {
+            width: 100%;
+            padding: 4px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            text-align: inherit;
+        }
+        .text-left {
+            text-align: left;
+        }
+        
+        /* Buttons & Actions */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .btn-add { background-color: #27ae60; color: white; }
+        .btn-remove { background-color: #e74c3c; color: white; padding: 2px 6px; font-size: 12px; }
+        .btn-print { background-color: #2980b9; color: white; margin: 20px auto 0; display: block; width: 200px; padding: 10px; text-align: center; font-size: 16px; }
+
+        /* Footer / Signature */
+        .footer-sign {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 0 20px;
+        }
+        .sign-box {
+            text-align: center;
+            font-size: 14px;
+        }
+        .sign-line {
+            border-top: 1px dashed #333;
+            margin-top: 40px;
+            padding-top: 5px;
+        }
+
+        /* PRINT STYLES - Optimized for Paper */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                border: none;
+                width: 100%;
+                max-width: 100%;
+                padding: 0;
+            }
+            .no-print, .btn-remove {
+                display: none !important;
+            }
+            input {
+                border: none !important;
+                background: transparent !important;
+                outline: none !important;
+                padding: 0 !important;
+            }
+            /* Hide input spinners */
+            input[type=number]::-webkit-inner-spin-button, 
+            input[type=number]::-webkit-outer-spin-button { 
+                -webkit-appearance: none; 
+                margin: 0; 
+            }
+            table, th, td {
+                border: 1px solid #000 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <h1>কর্ণ কম্পিউটার ট্রেনিং ইনস্টিটিউট</h1>
+        <p>খুটামারা, দেবীগঞ্জ, পঞ্চগড়।</p>
+        <p>প্রোঃ পরিমল চন্দ্র রায় | স্থাপিত- ২০১৯খ্রিঃ</p>
+        <p>Mobile: 01792-948280 | E-mail: karnacomputer2022@gmail.com</p>
+    </div>
+
+    <!-- Customer Info -->
+    <div class="info-grid">
+        <div class="info-group">
+            <label>তারিখঃ</label>
+            <input type="text" id="date" value="০৯/১১/২০২৬ইং">
+        </div>
+        <div class="info-group full-width">
+            <label>নাম:</label>
+            <input type="text" id="customer-name" value="মোঃ সোহেল রানা, ম্যানেজার, মেসার্স ভাই ভাই ট্রেডার্স, পক্ষে সাজু ভাই, দেবীগঞ্জ">
+        </div>
+        <div class="info-group full-width">
+            <label>ঠিকানা:</label>
+            <input type="text" id="customer-address" value="মহলবাড়ী, রানীশংকৈল, ঠাকুরগাঁও (মোবাইল: ০১৭৩৮৩৭৪৯৫৮-সোহেল রানা ভাই)">
+        </div>
+    </div>
+
+    <!-- Product Table -->
+    <h3 style="margin-bottom: 8px; font-size: 16px;">পণ্যের বিবরণ:</h3>
+    <table id="product-table">
+        <thead>
+            <tr>
+                <th style="width: 8%;">ক্র নং</th>
+                <th style="width: 45%;">বিবরণ</th>
+                <th style="width: 17%;">পরিমান/সংখ্যা</th>
+                <th style="width: 12%;">দর</th>
+                <th style="width: 13%;">টাকা</th>
+                <th class="no-print" style="width: 5%;">অ্যাকশন</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>০১</td>
+                <td class="text-left"><input type="text" value="হাই লাইটার"></td>
+                <td><input type="text" class="qty" value="০২টি" oninput="calculateTotals()"></td>
+                <td><input type="number" class="rate" value="40" oninput="calculateTotals()"></td>
+                <td class="total-price">80</td>
+                <td class="no-print"><button class="btn btn-remove" onclick="removeRow(this)">X</button></td>
+            </tr>
+            <tr>
+                <td>০২</td>
+                <td class="text-left"><input type="text" value="গুড লাক কলম"></td>
+                <td><input type="text" class="qty" value="০২টি" oninput="calculateTotals()"></td>
+                <td><input type="number" class="rate" value="7.5" oninput="calculateTotals()"></td>
+                <td class="total-price">15</td>
+                <td class="no-print"><button class="btn btn-remove" onclick="removeRow(this)">X</button></td>
+            </tr>
+            <tr>
+                <td>০৩</td>
+                <td class="text-left"><input type="text" value="বসুন্ধরা খাতা"></td>
+                <td><input type="text" class="qty" value="০১টি" oninput="calculateTotals()"></td>
+                <td><input type="number" class="rate" value="55" oninput="calculateTotals()"></td>
+                <td class="total-price">55</td>
+                <td class="no-print"><button class="btn btn-remove" onclick="removeRow(this)">X</button></td>
+            </tr>
+            <tr>
+                <td>০৪</td>
+                <td class="text-left"><input type="text" value="প্রিন্ট (টিডিএস, ঠাকুরগাও শিক্ষা প্রকৌশল)"></td>
+                <td><input type="text" class="qty" value="১৩১ কপি" oninput="calculateTotals()"></td>
+                <td><input type="number" class="rate" value="3" oninput="calculateTotals()"></td>
+                <td class="total-price">393</td>
+                <td class="no-print"><button class="btn btn-remove" onclick="removeRow(this)">X</button></td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4" style="text-align: right; font-weight: bold;">সর্বমোট বিল:</td>
+                <td id="grand-total" style="font-weight: bold;">543</td>
+                <td class="no-print"></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="btn-group no-print">
+        <button class="btn btn-add" onclick="addProductRow()">+ নতুন আইটেম যোগ করুন</button>
+    </div>
+
+    <!-- Deposit Details Table -->
+    <h3 style="margin-bottom: 8px; font-size: 16px; margin-top: 20px;">জমার বিবরণ:</h3>
+    <table id="deposit-table">
+        <thead>
+            <tr>
+                <th style="width: 10%;">ক্র নং</th>
+                <th style="width: 40%;">বিবরণ</th>
+                <th style="width: 20%;">টাকার হিসাব</th>
+                <th style="width: 15%;">তারিখ</th>
+                <th style="width: 15%;">মন্তব্য</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>০১</td>
+                <td class="text-left"><input type="text" value="জমা"></td>
+                <td><input type="number" class="deposit-amount" value="0" oninput="calculateTotals()"></td>
+                <td><input type="text" value=""></td>
+                <td><input type="text" value=""></td>
+            </tr>
+            <tr>
+                <td>০২</td>
+                <td class="text-left"><input type="text" value="জমা"></td>
+                <td><input type="number" class="deposit-amount" value="0" oninput="calculateTotals()"></td>
+                <td><input type="text" value=""></td>
+                <td><input type="text" value=""></td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2" style="text-align: right; font-weight: bold;">মোট জমা:</td>
+                <td id="total-deposit" style="font-weight: bold;">0</td>
+                <td colspan="2"></td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: right; font-weight: bold; color: #c0392b;">অবশিষ্ট বকেয়া:</td>
+                <td id="due-amount" style="font-weight: bold; color: #c0392b;">543</td>
+                <td colspan="2"></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <!-- Footer Signatures -->
+    <div class="footer-sign">
+        <div class="sign-box">
+            <div class="sign-line">গ্রাহকের স্বাক্ষর</div>
+        </div>
+        <div class="sign-box">
+            <p style="font-size: 13px;">পরিশোধিত বিল সাবমিট - হায়াদ</p>
+            <div class="sign-line">
+                <strong>(পরিমল চন্দ্র রায়)</strong><br>
+                কর্ণ কম্পিউটার ট্রেনিং ইনস্টিটিউট<br>
+                খুটামারা, দেবীগঞ্জ, পঞ্চগড়।<br>
+                মোবাইল- ০১৭৯২৯৪৮২৮০
+            </div>
+        </div>
+    </div>
+
+    <!-- Print Button -->
+    <button class="btn btn-print no-print" onclick="window.print()">প্রিন্ট করুন</button>
+</div>
+
+<script>
+    // Bengali number parser
+    function parseBnNum(str) {
+        if(!str) return 0;
+        const bnNums = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+        let enStr = str.toString();
+        for(let i=0; i<10; i++){
+            enStr = enStr.replaceAll(bnNums[i], i);
+        }
+        // Extract numbers from text like "১৩১ কপি" or "০২টি"
+        const matches = enStr.match(/[-+]?[0-9]*\.?[0-9]+/);
+        return matches ? parseFloat(matches[0]) : 0;
+    }
+
+    function calculateTotals() {
+        let grandTotal = 0;
+        const rows = document.querySelectorAll('#product-table tbody tr');
+
+        rows.forEach(row => {
+            const qtyVal = row.querySelector('.qty').value;
+            const rateVal = parseFloat(row.querySelector('.rate').value) || 0;
+            const qtyNum = parseBnNum(qtyVal);
+            
+            const total = qtyNum * rateVal;
+            row.querySelector('.total-price').innerText = total > 0 ? total : 0;
+            grandTotal += total;
+        });
+
+        document.getElementById('grand-total').innerText = grandTotal;
+
+        // Deposit calculations
+        let totalDeposit = 0;
+        const depositInputs = document.querySelectorAll('.deposit-amount');
+        depositInputs.forEach(input => {
+            totalDeposit += parseFloat(input.value) || 0;
+        });
+
+        document.getElementById('total-deposit').innerText = totalDeposit;
+        document.getElementById('due-amount').innerText = grandTotal - totalDeposit;
+    }
+
+    function addProductRow() {
+        const tbody = document.querySelector('#product-table tbody');
+        const rowCount = tbody.children.length + 1;
+        const bnNums = ['০০','০১','০২','০৩','০৪','০৫','০৬','০৭','০৮','০৯','১০'];
+        const slNo = rowCount < bnNums.length ? bnNums[rowCount] : rowCount;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${slNo}</td>
+            <td class="text-left"><input type="text" value=""></td>
+            <td><input type="text" class="qty" value="০১টি" oninput="calculateTotals()"></td>
+            <td><input type="number" class="rate" value="0" oninput="calculateTotals()"></td>
+            <td class="total-price">0</td>
+                <td class="no-print"><button class="btn btn-remove" onclick="removeRow(this)">X</button></td>
+        `;
+        tbody.appendChild(tr);
+        calculateTotals();
+    }
+
+    function removeRow(btn) {
+        btn.closest('tr').remove();
+        calculateTotals();
+    }
+
+    // Initial Calculation
+    calculateTotals();
+</script>
+
+</body>
+</html>
