@@ -109,7 +109,8 @@
             
             <!-- ১. ড্যাশবোর্ড ট্যাব -->
             <div id="tab-dashboard" class="space-y-6">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- স্ট্যাট কার্ডস -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
                         <div>
                             <p class="text-sm text-slate-500 font-medium">আজকের মোট বিক্রি</p>
@@ -117,6 +118,24 @@
                         </div>
                         <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-xl">
                             <i class="fa-solid fa-bangladeshi-taka-sign"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-slate-500 font-medium">আজকের মোট লাভ (Profit)</p>
+                            <h3 id="stat-today-profit" class="text-2xl font-bold text-emerald-600 mt-1">৳ 0.00</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-slate-500 font-medium">চলতি মাসের মোট লাভ (Profit)</p>
+                            <h3 id="stat-month-profit" class="text-2xl font-bold text-blue-600 mt-1">৳ 0.00</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-calendar-days"></i>
                         </div>
                     </div>
                     <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
@@ -273,9 +292,16 @@
                 </div>
             </div>
 
-            <!-- ৫. বিক্রির হিস্টরি ট্যাব (মালিকের প্যানেল) -->
+            <!-- ৫. বিক্রির হিস্টরি ট্যাব -->
             <div id="tab-history" class="hidden bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-                <h3 class="text-lg font-bold text-slate-800 mb-4">সকল বিক্রির হিস্টরি (মালিক পোর্টাল)</h3>
+                <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                    <h3 class="text-lg font-bold text-slate-800">সকল বিক্রির হিস্টরি (মালিক পোর্টাল)</h3>
+                    <div class="flex items-center space-x-2">
+                        <label class="text-sm text-slate-600 font-medium">তারিখ দিয়ে খুঁজুন:</label>
+                        <input type="date" id="filter-date" onchange="renderSalesHistory()" class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button onclick="clearDateFilter()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1.5 rounded-lg text-sm transition">রিসেট</button>
+                    </div>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
@@ -459,14 +485,61 @@
             }
         }
 
+        // লাভ এবং বিক্রির হিসাব রেন্ডার
         function renderDashboard() {
-            let today = new Date().toDateString();
-            let todaySale = sales.filter(s => new Date(s.date).toDateString() === today).reduce((sum, s) => sum + s.total, 0);
-            let computerBill = sales.filter(s => s.type === 'service' && new Date(s.date).toDateString() === today).reduce((sum, s) => sum + s.total, 0);
+            let todayStr = new Date().toISOString().split('T')[0];
+            let currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+
+            let todaySale = 0;
+            let todayProfit = 0;
+            let monthProfit = 0;
+            let computerBill = 0;
+
+            sales.forEach(s => {
+                let sDateStr = s.date.split('T')[0];
+                let sMonthStr = s.date.slice(0, 7);
+
+                // আজকের বিক্রি
+                if(sDateStr === todayStr) {
+                    todaySale += s.total;
+                    if(s.type === 'service') {
+                        computerBill += s.total;
+                    }
+                }
+
+                // আজকের লাভ হিসাব
+                if(sDateStr === todayStr) {
+                    if(s.type === 'service') {
+                        todayProfit += s.total; // সার্ভিসের পুরো টাকাই লাভ
+                    } else {
+                        s.items.forEach(item => {
+                            let prod = products.find(p => p.id === item.productId);
+                            let buyPrice = prod ? prod.buy : (item.price * 0.8); // যদি পণ্য না থাকে আনুমানিক ক্রয়মূল্য ধরে হিসাব
+                            todayProfit += (item.price - buyPrice) * item.qty;
+                        });
+                    }
+                }
+
+                // চলতি মাসের লাভ হিসাব
+                if(sMonthStr === currentMonth) {
+                    if(s.type === 'service') {
+                        monthProfit += s.total;
+                    } else {
+                        s.items.forEach(item => {
+                            let prod = products.find(p => p.id === item.productId);
+                            let buyPrice = prod ? prod.buy : (item.price * 0.8);
+                            monthProfit += (item.price - buyPrice) * item.qty;
+                        });
+                    }
+                }
+            });
+
             let totalDue = dueList.reduce((sum, d) => sum + d.amount, 0);
             let totalStockCount = products.reduce((sum, p) => sum + parseInt(p.stock), 0);
 
             document.getElementById("stat-today-sale").innerText = `৳ ${todaySale.toFixed(2)}`;
+            document.getElementById("stat-today-profit").innerText = `৳ ${todayProfit.toFixed(2)}`;
+            document.getElementById("stat-month-profit").innerText = `৳ ${monthProfit.toFixed(2)}`;
             document.getElementById("stat-computer-bill").innerText = `৳ ${computerBill.toFixed(2)}`;
             document.getElementById("stat-total-due").innerText = `৳ ${totalDue.toFixed(2)}`;
             document.getElementById("stat-total-stock").innerText = totalStockCount;
@@ -476,11 +549,11 @@
             salesChartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['স্টেশনারী বিক্রি', 'কম্পিউটার সার্ভিস', 'মোট বাকি'],
+                    labels: ['আজকের বিক্রি', 'আজকের লাভ', 'মাসের লাভ', 'মোট বাকি'],
                     datasets: [{
                         label: 'টাকা (BDT)',
-                        data: [todaySale - computerBill, computerBill, totalDue],
-                        backgroundColor: ['#2563eb', '#10b981', '#ef4444'],
+                        data: [todaySale, todayProfit, monthProfit, totalDue],
+                        backgroundColor: ['#2563eb', '#10b981', '#3b82f6', '#ef4444'],
                         borderRadius: 6
                     }]
                 },
@@ -592,16 +665,18 @@
                 if(p) p.stock -= item.qty;
             });
 
-            let newSale = { type: 'stationery', customer: customerName, items: [...cart], total: total, date: new Date() };
+            // বিক্রির সাথে productId যুক্ত করা হলো যাতে লাভের সঠিক হিসাব করা যায়
+            let saleItemsFormatted = cart.map(i => ({ productId: i.id, name: i.name, price: i.price, qty: i.qty }));
+            let newSale = { type: 'stationery', customer: customerName, items: saleItemsFormatted, total: total, date: new Date().toISOString() };
             sales.push(newSale);
 
             if(status === 'due') {
                 let existingDue = dueList.find(d => d.customer.toLowerCase() === customerName.toLowerCase());
                 if(existingDue) {
                     existingDue.amount += total;
-                    existingDue.date = new Date();
+                    existingDue.date = new Date().toISOString();
                 } else {
-                    dueList.push({ customer: customerName, amount: total, date: new Date() });
+                    dueList.push({ customer: customerName, amount: total, date: new Date().toISOString() });
                 }
             }
 
@@ -632,7 +707,7 @@
                 customer: customer, 
                 items: [{ name: `সার্ভিস: ${type} (${qty} шт)`, price: amount, qty: 1 }], 
                 total: amount, 
-                date: new Date() 
+                date: new Date().toISOString() 
             };
             sales.push(newSale);
 
@@ -640,9 +715,9 @@
                 let existingDue = dueList.find(d => d.customer.toLowerCase() === customer.toLowerCase());
                 if(existingDue) {
                     existingDue.amount += due;
-                    existingDue.date = new Date();
+                    existingDue.date = new Date().toISOString();
                 } else {
-                    dueList.push({ customer: customer, amount: due, date: new Date() });
+                    dueList.push({ customer: customer, amount: due, date: new Date().toISOString() });
                 }
             }
 
@@ -673,16 +748,22 @@
             });
         }
 
-        // মালিক পোর্টালের জন্য বিক্রির হিস্টরি রেন্ডার
         function renderSalesHistory() {
             const tbody = document.getElementById("sales-history-body");
             tbody.innerHTML = "";
-            if(sales.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-slate-400 py-6">এখনো কোনো বিক্রির হিস্টরি নেই</td></tr>`;
+            
+            let selectedDate = document.getElementById("filter-date").value;
+            let filteredSales = sales;
+            if(selectedDate) {
+                filteredSales = sales.filter(s => s.date.split('T')[0] === selectedDate);
+            }
+
+            if(filteredSales.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-slate-400 py-6">এই তারিখের কোনো বিক্রির হিস্টরি পাওয়া যায়নি</td></tr>`;
                 return;
             }
-            // উল্টো দিক থেকে দেখাবে যাতে শেষের বিক্রি আগে থাকে
-            [...sales].reverse().forEach((s, index) => {
+
+            [...filteredSales].reverse().forEach((s) => {
                 let itemNames = s.items.map(i => `${i.name} (${i.qty}x)`).join(', ');
                 let saleDate = new Date(s.date).toLocaleString('bn-BD');
                 tbody.innerHTML += `
@@ -697,6 +778,11 @@
                     </tr>
                 `;
             });
+        }
+
+        function clearDateFilter() {
+            document.getElementById("filter-date").value = "";
+            renderSalesHistory();
         }
 
         function openAddProductModal() {
@@ -775,7 +861,6 @@
             }
         }
 
-        // ফিক্সড প্রিন্ট মেথড (যাতে সব ডিভাইসে রসিদ প্রিন্ট হয়)
         function triggerReceipt(customer, items, total) {
             document.getElementById("receipt-customer").innerText = customer;
             document.getElementById("receipt-date").innerText = new Date().toLocaleString('bn-BD');
@@ -783,7 +868,7 @@
             
             let tbody = document.getElementById("receipt-items-body");
             tbody.innerHTML = "";
-            items.forEach(i => {
+            items.growthItems || items.forEach(i => {
                 tbody.innerHTML += `
                     <tr>
                         <td class="py-1">${i.name}</td>
@@ -793,13 +878,11 @@
                 `;
             });
 
-            // ব্রাউজার প্রিন্ট ডায়ালগ ট্রিগার
             setTimeout(() => {
                 window.print();
             }, 300);
         }
 
-        // হিস্টরি থেকে যেকোনো পুরনো রসিদ পুনরায় প্রিন্ট করার ফাংশন
         function reprintReceipt(saleObj) {
             triggerReceipt(saleObj.customer, saleObj.items, saleObj.total);
         }
